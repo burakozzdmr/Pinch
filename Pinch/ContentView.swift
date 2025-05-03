@@ -14,6 +14,7 @@ struct ContentView: View {
     @State private var imageScale: CGFloat = 1
     @State private var imageOffset: CGSize = .zero
     @State private var isDrawerOpen: Bool = false
+    @State private var pageIndex: Int = 0
     
     // MARK: - FUNCTIONS
     
@@ -28,7 +29,7 @@ struct ContentView: View {
         NavigationView {
             ZStack {
                 Color.clear
-                Image("magazine-front-cover")
+                Image(pages[pageIndex].imageName)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .cornerRadius(12)
@@ -153,6 +154,22 @@ struct ContentView: View {
                         }
                     }
                     // MARK: - THUMBNAILS
+                    ForEach(pages) { item in
+                        Image(item.thumbnailName)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 80)
+                            .cornerRadius(8)
+                            .shadow(radius: 4)
+                            .opacity(isDrawerOpen ? 1 : 0)
+                            .animation(.easeOut, value: isDrawerOpen)
+                            .onTapGesture(perform: {
+                                withAnimation(.spring()) {
+                                    isAnimating = true
+                                    pageIndex = item.id
+                                }
+                            })
+                    }
                     
                     Spacer()
                 }
