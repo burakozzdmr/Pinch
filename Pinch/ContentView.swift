@@ -59,6 +59,28 @@ struct ContentView: View {
                                 }
                             })
                     )
+                
+                // MARK: - 3. MAGNIFICATION
+                    .gesture(
+                        MagnificationGesture()
+                            .onChanged({ value in
+                                withAnimation(.linear) {
+                                    if imageScale >= 1 && imageScale <= 5 {
+                                        imageScale = value
+                                    } else if imageScale > 5 {
+                                        imageScale = 5
+                                }
+                            }
+                        }
+                    )
+                            .onEnded({ _ in
+                                if imageScale > 5 {
+                                    imageScale = 5
+                                } else if imageScale <= 1 {
+                                    resetImageState()
+                                }
+                            })
+                )
             } //: ZSTACK
             .navigationTitle("Pinch & Zoom")
             .navigationBarTitleDisplayMode(.inline)
@@ -69,6 +91,51 @@ struct ContentView: View {
             .overlay(
                 InfoPanelView(scale: imageScale, offset: imageOffset)
                 , alignment: .top
+            )
+            // MARK: - CONTROLS
+            .overlay(
+                Group {
+                    HStack {
+                        // SCALE DOWN
+                        Button {
+                            withAnimation(.spring()) {
+                                if imageScale > 1 {
+                                    imageScale -= 1
+                                }
+                            }
+                        } label: {
+                            ControlImageView(iconName: "minus.magnifyingglass")
+                        }
+                        // SCALE RESET
+                        
+                        Button {
+                            withAnimation(.spring()) {
+                                resetImageState()
+                            }
+                        } label: {
+                            ControlImageView(iconName: "arrow.up.left.and.down.right.magnifyingglass")
+                        }
+                        
+                        // SCALE UP
+                        
+                        Button {
+                            withAnimation(.spring()) {
+                                if imageScale < 5 {
+                                    imageScale += 1
+                                } else if imageScale > 5 {
+                                    imageScale = 5
+                                }
+                            }
+                        } label: {
+                            ControlImageView(iconName: "plus.magnifyingglass")
+                        }
+                    } //: CONTROLS
+                    .padding(EdgeInsets(top: 12, leading: 20, bottom: 12, trailing: 20))
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(12)
+                }
+                .padding()
+                ,alignment: .bottom
             )
             
         } //: NAVIGATION VIEW
